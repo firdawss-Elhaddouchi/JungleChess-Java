@@ -169,15 +169,40 @@ public class Board {
     }
    
     
-    private void endGame(int winnerPlayer) {
+    /*private void endGame(int winnerPlayer) {
         if (!gameOver) {
             System.out.println("Game over! Winner: Player " + winnerPlayer);
             eventLog.add("Game ended. Winner: Player " + winnerPlayer);
             gameOver = true;
         }
+    }*/
+    private void endGame(int winnerPlayer) {
+        if (!gameOver) {
+            System.out.println("Game over! Winner: Player " + winnerPlayer);
+            eventLog.add("Game ended. Winner: Player " + winnerPlayer);
+            gameOver = true;
+
+            // Determine winner's username
+            String winnerName = getWinnerName(winnerPlayer);
+
+            // Save match result to database
+            matchHistoryDAO.saveMatchResult(
+                    player1Account.getUsername(),
+                    player2Account.getUsername(),
+                    winnerName,
+                    eventLog
+            );
+        }
     }
 
-    
+    private String getWinnerName(int winnerPlayer) {
+        if (winnerPlayer == 1 && player1Account != null) {
+            return player1Account.getUsername();
+        } else if (winnerPlayer == 2 && player2Account != null) {
+            return player2Account.getUsername();
+        }
+        return "Unknown"; // Fallback if accounts are not set
+    }
     
     public void switchPlayer() {
         currentPlayer = (currentPlayer == 1) ? 2 : 1;
@@ -197,7 +222,6 @@ public class Board {
 
         return false;
     }
-
     private boolean checkWinCondition() {
         // Win by capturing opponent's sanctuary
         // Player 1's sanctuary is at (8,3)
@@ -246,9 +270,7 @@ public class Board {
             for (int j = 0; j < 7; j++) {
                 display[i][j] = '.'; 
             }
-        }
-
-        
+        }     
         display[3][1] = '#'; display[3][2] = '#';
         display[4][1] = '#'; display[4][2] = '#';
         display[5][1] = '#'; display[5][2] = '#';
@@ -256,15 +278,11 @@ public class Board {
         display[3][4] = '#'; display[3][5] = '#';
         display[4][4] = '#'; display[4][5] = '#';
         display[5][4] = '#'; display[5][5] = '#';
-
        
         display[0][2] = '&'; display[0][4] = '&';
         display[1][3] = '&';
-
         display[7][3] = '&';
-        display[8][2] = '&'; display[8][4] = '&';
-
-       
+        display[8][2] = '&'; display[8][4] = '&';     
         display[0][3] = '*';
         display[8][3] = '*';
 
